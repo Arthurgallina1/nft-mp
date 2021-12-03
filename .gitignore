@@ -38,6 +38,8 @@ yarn-error.log*
 
 node_modules
 .env
+env.js
+.env.js
 coverage
 coverage.json
 typechain
