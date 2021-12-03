@@ -75,5 +75,41 @@ contract TKMarket is ReentrancyGuard {
             price,
             false
         );
+
+        //NFT Transaction
+        IERC721(nftContract).transferFrom(msg.sender, address(this), tokenId);
+
+        emit MarketTokenMinted(
+            itemId,
+            nftContract,
+            tokenId,
+            msg.sender,
+            address(0),
+            price,
+            false
+        );
+    }
+
+    //conduct transactions and sales
+    function createMarketSale(address nftContract, uint256 itemId)
+        public
+        payable
+        nonReentrant
+    {
+        uint256 price = idToMarketToken[itemId].price;
+        uint256 tokenId = idToMarketToken[itemId].tokenId;
+
+        require(msg.value == price, "Please submit asking price");
+        //transfer to seller
+        idToMarketToken[itemId].seller.transfer(msg.value);
+
+        //transfer token from contract address to buyer
+        IERC721(nftContract).transferFrom(address(this), msg.sender, tokenId);
+        idToMarketToken[itemId].owner = payable(msg.sender);
+        idToMarketToken[itemId].sold = true;
+
+        _tokensSold.increment();
+
+        payable(owner).transfer(listingPrice);
     }
 }
