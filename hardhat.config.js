@@ -16,7 +16,8 @@
  */
 
 require("@nomiclabs/hardhat-waffle");
-const env = require('./env.js')
+
+const env = require('./env.json')
 
 module.exports = {
   defaultNetwork: 'hardhat',
@@ -25,12 +26,12 @@ module.exports = {
       chainId: 1337 //stand
     },
     mumbai: {
-      url: env.default.mumbaiUrl,
-      accounts: [env.default.key]
+      url: env.mumbaiUrl,
+      accounts: [env.key]
     },
     mainnet: {
-      url: env.default.mainnetUrl,
-      accounts: [env.default.key]
+      url: env.mainnetUrl,
+      accounts: [env.key]
     }
   },
   solidity: {
