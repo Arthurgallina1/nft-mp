@@ -39,7 +39,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        run: 200
+        runs: 200
       }
     }
   }
