@@ -131,4 +131,54 @@ contract TKMarket is ReentrancyGuard {
 
         return items;
     }
+
+    function fetchMyNFTs() public view returns (MarketToken[] memory) {
+        uint256 totalItemCount = _tokensIds.current();
+        uint256 itemCount = 0;
+        uint256 currentIndex = 0;
+
+        //get right item counting
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (idToMarketToken[i + 1].owner == msg.sender) {
+                itemCount += 1;
+            }
+        }
+
+        MarketToken[] memory items = new MarketToken[](itemCount);
+
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (idToMarketToken[i + 1].owner == msg.sender) {
+                uint256 currentId = idToMarketToken[i + 1].itemId;
+                MarketToken storage currentItem = idToMarketToken[currentId];
+                items[currentIndex] = currentItem;
+                currentIndex += 1;
+            }
+        }
+        return items;
+    }
+
+    // what items has user created
+    function fetchItemsCreated() public view returns (MarketToken[] memory) {
+        uint256 totalItemCount = _tokensIds.current();
+        uint256 itemCount = 0;
+        uint256 currentIndex = 0;
+
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (idToMarketToken[i + 1].seller == msg.sender) {
+                itemCount += 1;
+            }
+        }
+
+        MarketToken[] memory items = new MarketToken[](itemCount);
+
+        for (uint256 i = 0; i < totalItemCount; i++) {
+            if (idToMarketToken[i + 1].seller == msg.sender) {
+                uint256 currentId = idToMarketToken[i + 1].itemId;
+                MarketToken storage currentItem = idToMarketToken[currentId];
+                items[currentIndex] = currentItem;
+                currentIndex += 1;
+            }
+        }
+        return items;
+    }
 }
