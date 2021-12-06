@@ -112,4 +112,23 @@ contract TKMarket is ReentrancyGuard {
 
         payable(owner).transfer(listingPrice);
     }
+
+    function fetchMarketTokens() public view returns (MarketToken[] memory) {
+        uint256 itemCount = _tokensIds.current();
+        uint256 unsoldItemCount = itemCount - _tokensSold.current();
+        uint256 currentIndex = 0;
+
+        //loop over created items and populate not sold
+        MarketToken[] memory items = new MarketToken[](unsoldItemCount);
+        for (uint256 i = 0; i < itemCount; i++) {
+            if (idToMarketToken[i + 1].owner == address(0)) {
+                uint256 currentId = i + 1;
+                MarketToken storage currentItem = idToMarketToken[currentId];
+                items[currentIndex] = currentItem;
+                currentIndex += 1;
+            }
+        }
+
+        return items;
+    }
 }
