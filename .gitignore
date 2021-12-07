@@ -44,6 +44,7 @@ env.json
 coverage
 coverage.json
 typechain
+config.js
 
 #Hardhat files
 cache
