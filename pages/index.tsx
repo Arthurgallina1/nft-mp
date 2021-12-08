@@ -91,8 +91,9 @@ const Home: NextPage = () => {
                   <button
                     className='w-full bg-purple-500 text-white font-bold py-3 px-12 rounded'
                     onClick={() => buyNFT(nft)}
-                  ></button>
-                  BUY
+                  >
+                    BUY
+                  </button>
                 </div>
               </div>
             ))}

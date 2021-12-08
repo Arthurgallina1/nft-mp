@@ -11,7 +11,7 @@ import { nftAddress, nftMarketAddress } from '../config'
 import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
 import TKMarket from '../artifacts/contracts/TKMarket.sol/TKMarket.json'
 
-const IPFS_URL = 'https://ipfs.infura.io:5001/api/v0/'
+const IPFS_URL = 'https://ipfs.infura.io:5001/api/v0'
 
 // Set IPFS up to host NFT data - file storage
 const client = ipfsHttpClient({ url: IPFS_URL })
@@ -33,7 +33,7 @@ const MintItem: NextPage = () => {
         progress: (prog) => console.log(`received: ${prog}`),
       })
 
-      const url = `${IPFS_URL}/${added.path}`
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`
       setFileUrl(url)
     } catch (err) {
       console.log(`Error uploading file: ${err}`)
@@ -55,7 +55,7 @@ const MintItem: NextPage = () => {
       })
 
       const added = await client.add(data)
-      const url = `${IPFS_URL}/${added.path}`
+      const url = `https://ipfs.infura.io/ipfs/${added.path}`
       //create sale and passes in the url
       createSale(url)
     } catch (err) {
@@ -71,7 +71,7 @@ const MintItem: NextPage = () => {
 
     //create token
     const contract = new ethers.Contract(nftAddress, NFT.abi, signer)
-    let transaction = await contract.createToken(url)
+    let transaction = await contract.mintToken(url)
     const tx = await transaction.wait()
     const event = tx.events[0]
     const value = event.args[2]
@@ -88,7 +88,7 @@ const MintItem: NextPage = () => {
     let listingPrice = await marketContract.getListingPrice()
     listingPrice = listingPrice.toString()
 
-    transaction = await marketContract.makeMarketItem(
+    transaction = await marketContract.mintMarketItem(
       nftAddress,
       tokenId,
       price,
@@ -100,7 +100,6 @@ const MintItem: NextPage = () => {
 
   return (
     <div className='flex justify-center'>
-      <h1>Mint token</h1>
       <div className='w-1/2 flex flex-col pb-12'>
         <input
           placeholder='Asset Name'
@@ -121,10 +120,20 @@ const MintItem: NextPage = () => {
         />
         <input
           type='file'
+          name='Asset'
           placeholder='Asset Price in Eth'
           className='mt-2 border rounded p-4'
           onChange={onChange}
         />
+        {fileUrl && (
+          <img src={fileUrl} alt='img' className='rounded mt-4' width='350px' />
+        )}
+        <button
+          className='font-bold mt-4 rounded bg-blue-900 text-white p-4 shadow-lg'
+          onClick={createMarket}
+        >
+          Mint NFT
+        </button>
       </div>
     </div>
   )
