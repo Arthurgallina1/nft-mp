@@ -82,6 +82,17 @@ const Home: NextPage = () => {
                 <img src={nft.image} />
                 <div className='p-4'>
                   <p className='text-3x1 font-semibold'>{nft.name}</p>
+                  <p className='text-gray-400'>{nft.description}</p>
+                </div>
+                <div className='p-4 bg-black'>
+                  <p className='text-3x-1 mb-4 font-bold text-white'>
+                    {nft.price} ETH
+                  </p>
+                  <button
+                    className='w-full bg-purple-500 text-white font-bold py-3 px-12 rounded'
+                    onClick={() => buyNFT(nft)}
+                  ></button>
+                  BUY
                 </div>
               </div>
             ))}
