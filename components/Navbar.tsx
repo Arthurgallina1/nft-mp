@@ -78,7 +78,7 @@ export default function Navbar() {
                     <Link href='/my-nfts'>My NFTs</Link>
                   </span>
                   <span className='text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium'>
-                    <Link href='/account'>Account</Link>
+                    <Link href='/dashboard'>My Account</Link>
                   </span>
                 </div>
               </div>
