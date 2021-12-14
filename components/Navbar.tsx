@@ -33,7 +33,7 @@ const inactiveClassName =
   'text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium'
 
 export default function Navbar() {
-  const router = useRouter()
+  const { pathname } = useRouter()
 
   return (
     <>
@@ -88,7 +88,7 @@ export default function Navbar() {
                     <span
                       key={navItem.path}
                       className={
-                        router.pathname === navItem.path
+                        pathname === navItem.path
                           ? activeClassName
                           : inactiveClassName
                       }
@@ -108,7 +108,7 @@ export default function Navbar() {
               <span
                 key={navItem.path}
                 className={
-                  router.pathname === navItem.path
+                  pathname === navItem.path
                     ? activeClassName
                     : inactiveClassName
                 }

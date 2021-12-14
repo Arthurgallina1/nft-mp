@@ -1,13 +1,14 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import Navbar from '../components/Navbar'
+import Web3ContextProvider from '../context/web3context'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div>
+    <Web3ContextProvider>
       <Navbar />
       <Component {...pageProps} />
-    </div>
+    </Web3ContextProvider>
   )
 }
 
