@@ -1,17 +1,13 @@
-import { ethers } from 'ethers'
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import type { NextPage } from 'next'
-
-import Web3Modal from 'web3modal'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 
-import { nftAddress, nftMarketAddress } from '../config'
-
-import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
-import TKMarket from '../artifacts/contracts/TKMarket.sol/TKMarket.json'
+import { nftAddress } from '../config'
 import { useWeb3Context } from '../context/web3context'
 import useTokenContract from '../hooks/useTokenContract'
+import { parsePriceToEther } from '../utils/formatters'
+import useTKMarketContract from '../hooks/useTKMarketContract'
 
 const IPFS_URL = 'https://ipfs.infura.io:5001/api/v0'
 
@@ -20,8 +16,9 @@ const client = ipfsHttpClient({ url: IPFS_URL })
 
 const MintItem: NextPage = () => {
   const router = useRouter()
-  const { signer, provider } = useWeb3Context()
+  const { signer } = useWeb3Context()
   const { tokenContract } = useTokenContract()
+  const { TKMarketContract } = useTKMarketContract()
   const [fileUrl, setFileUrl] = useState('')
   const [formData, setFormData] = useState({
     price: '',
@@ -69,25 +66,17 @@ const MintItem: NextPage = () => {
 
   const createSale = async (url: string) => {
     //create token
-    // const contract = new ethers.Contract(nftAddress, NFT.abi, signer)
     const bindedSigner = tokenContract.connect(signer)
     let transaction = await bindedSigner.mintToken(url)
     const tx = await transaction.wait()
     const event = tx.events[0]
     const value = event.args[2]
     const tokenId = value.toNumber()
-    const price = ethers.utils.parseUnits(formData.price, 'ether')
-
-    //list for sale on marketplace
-    const marketContract = new ethers.Contract(
-      nftMarketAddress,
-      TKMarket.abi,
-      signer,
-    )
-    let listingPrice = await marketContract.getListingPrice()
+    const price = parsePriceToEther(formData.price)
+    let listingPrice = await TKMarketContract.getListingPrice()
     listingPrice = listingPrice.toString()
 
-    transaction = await marketContract.mintMarketItem(
+    transaction = await TKMarketContract.mintMarketItem(
       nftAddress,
       tokenId,
       price,

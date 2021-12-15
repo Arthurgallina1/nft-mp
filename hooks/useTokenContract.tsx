@@ -7,6 +7,7 @@ import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
 import TKMarket from '../artifacts/contracts/TKMarket.sol/TKMarket.json'
 import { useWeb3Context } from '../context/web3context'
 import { FormattedNFT } from '../data/models/formattedNFT'
+import { formatPriceToEther } from '../utils/formatters'
 
 export default function useTokenContract() {
   const [tokenContract, setTokenContract] = useState<any>()
@@ -29,10 +30,7 @@ export default function useTokenContract() {
         myNFTs.map(async (token: any) => {
           const tokenUri = await tokenContract.tokenURI(token.tokenId)
           const metaData = await axios.get(tokenUri)
-          const price = ethers.utils.formatUnits(
-            token.price.toString(),
-            'ether',
-          )
+          const price = formatPriceToEther(token.price.toString())
           const formattedToken = {
             price,
             tokenId: token.tokenId.toNumber(),

@@ -6,6 +6,7 @@ import axios from 'axios'
 import { useWeb3Context } from '../context/web3context'
 import useTKMarketContract from '../hooks/useTKMarketContract'
 import useTokenContract from '../hooks/useTokenContract'
+import { formatPriceToEther } from '../utils/formatters'
 
 const Dashboard: NextPage = () => {
   const [nfts, setNfts] = useState<any>([])
@@ -26,10 +27,7 @@ const Dashboard: NextPage = () => {
           createdNFTs.map(async (token: any) => {
             const tokenUri = await tokenContract.tokenURI(token.tokenId)
             const metaData = await axios.get(tokenUri)
-            const price = ethers.utils.formatUnits(
-              token.price.toString(),
-              'ether',
-            )
+            const price = formatPriceToEther(token.price.toString())
             const formattedToken = {
               price,
               tokenId: token.tokenId.toNumber(),
@@ -81,9 +79,8 @@ const Dashboard: NextPage = () => {
             ))}
           </div>
 
-          <h2>Sold NFTs</h2>
           <div className='flex justify-center'>
-            <div className='px-4'></div>
+            <h2>Sold NFTs</h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4'>
               {soldNFTs.map((nft: any) => (
                 <div key={nft.tokenId}>
