@@ -7,56 +7,55 @@ import Web3Modal from 'web3modal'
 import { nftAddress, nftMarketAddress } from '../config'
 import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
 import TKMarket from '../artifacts/contracts/TKMarket.sol/TKMarket.json'
+import useTKMarketContract from '../hooks/useTKMarketContract'
+import { useWeb3Context } from '../context/web3context'
 
 const Dashboard: NextPage = () => {
   const [nfts, setNfts] = useState<any>([])
   const [soldNFTs, setSoldNFTs] = useState<any>([])
   const [loading, setLoading] = useState<boolean>(true)
 
+  const { TKMarketContract } = useTKMarketContract()
+  const { provider } = useWeb3Context()
+
   useEffect(() => {
-    loadMyNFTs()
-  }, [])
+    if (TKMarketContract && provider) {
+      const loadMyNFTs = async () => {
+        // get msg.sender to the signer to display owner nfts
+        const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
+        const createdNFTs = await TKMarketContract.fetchItemsCreated()
 
-  const loadMyNFTs = async () => {
-    // get msg.sender to the signer to display owner nfts
+        const myNFTData = await Promise.all(
+          createdNFTs.map(async (token: any) => {
+            const tokenUri = await tokenContract.tokenURI(token.tokenId)
+            const metaData = await axios.get(tokenUri)
+            const price = ethers.utils.formatUnits(
+              token.price.toString(),
+              'ether',
+            )
+            const formattedToken = {
+              price,
+              tokenId: token.tokenId.toNumber(),
+              seller: token.seller,
+              owner: token.owner,
+              sold: token.sold,
+              image: metaData.data.image,
+              name: metaData.data.name,
+              description: metaData.data.description,
+            }
+            return formattedToken
+          }),
+        )
 
-    const web3Modal = new Web3Modal()
-    const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)
-    const signer = provider.getSigner()
+        const soldItems = myNFTData.filter((nft) => nft.sold)
+        setLoading(false)
+        setNfts(myNFTData)
+        setSoldNFTs(soldItems)
+      }
 
-    const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
-    const marketContract = new ethers.Contract(
-      nftMarketAddress,
-      TKMarket.abi,
-      signer,
-    )
-    const createdNFTs = await marketContract.fetchItemsCreated()
-
-    const myNFTData = await Promise.all(
-      createdNFTs.map(async (token: any) => {
-        const tokenUri = await tokenContract.tokenURI(token.tokenId)
-        const metaData = await axios.get(tokenUri)
-        const price = ethers.utils.formatUnits(token.price.toString(), 'ether')
-        const formattedToken = {
-          price,
-          tokenId: token.tokenId.toNumber(),
-          seller: token.seller,
-          owner: token.owner,
-          sold: token.sold,
-          image: metaData.data.image,
-          name: metaData.data.name,
-          description: metaData.data.description,
-        }
-        return formattedToken
-      }),
-    )
-
-    const soldItems = myNFTData.filter((nft) => nft.sold)
-    setLoading(false)
-    setNfts(myNFTData)
-    setSoldNFTs(soldItems)
-  }
+      loadMyNFTs()
+    }
+  }, [TKMarketContract, provider])
 
   return (
     <div>

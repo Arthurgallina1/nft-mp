@@ -1,5 +1,5 @@
-import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
+import { ethers } from 'ethers'
 import axios from 'axios'
 
 import { nftAddress, nftMarketAddress } from '../config'

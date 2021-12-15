@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import { FormattedNFT } from '../data/models/formattedNFT'
 import useTokenContract from '../hooks/useTokenContract'
 
 const MyNFTs: NextPage = () => {
@@ -12,7 +13,7 @@ const MyNFTs: NextPage = () => {
         <div className='flex justify-center'>
           <div className='px-4'></div>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4'>
-            {nfts.map((nft: any) => (
+            {nfts.map((nft: FormattedNFT) => (
               <div key={nft.tokenId}>
                 <img src={nft.image} />
                 <div className='p-4'>
