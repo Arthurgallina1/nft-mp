@@ -9,6 +9,7 @@ import { useWeb3Context } from '../context/web3context'
 import { FormattedNFT } from '../data/models/formattedNFT'
 
 export default function useTokenContract() {
+  const [tokenContract, setTokenContract] = useState<any>()
   const [nfts, setNfts] = useState<FormattedNFT[]>([])
   const [loading, setLoading] = useState<boolean>(true)
 
@@ -17,6 +18,7 @@ export default function useTokenContract() {
   useEffect(() => {
     const loadMyNFTs = async () => {
       const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
+      setTokenContract(tokenContract)
       const marketContract = new ethers.Contract(
         nftMarketAddress,
         TKMarket.abi,
@@ -50,5 +52,5 @@ export default function useTokenContract() {
     loadMyNFTs()
   }, [signer, provider])
 
-  return { nfts, loading }
+  return { tokenContract, nfts, loading }
 }
