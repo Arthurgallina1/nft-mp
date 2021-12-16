@@ -8,4 +8,8 @@ const formatPriceToEther = (price: string) => {
   return ethers.utils.formatUnits(price, 'ether')
 }
 
-export { parsePriceToEther, formatPriceToEther }
+const formatBignumberToString = (wei: ethers.BigNumberish) => {
+  return ethers.utils.formatEther(wei)
+}
+
+export { parsePriceToEther, formatPriceToEther, formatBignumberToString }

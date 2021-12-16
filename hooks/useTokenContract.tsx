@@ -18,35 +18,36 @@ export default function useTokenContract() {
 
   useEffect(() => {
     const loadMyNFTs = async () => {
-      const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
-      setTokenContract(tokenContract)
-      const marketContract = new ethers.Contract(
-        nftMarketAddress,
-        TKMarket.abi,
-        signer,
-      )
-      const myNFTs = await marketContract.fetchMyNFTs()
-      const myNFTData = await Promise.all(
-        myNFTs.map(async (token: any) => {
-          const tokenUri = await tokenContract.tokenURI(token.tokenId)
-          const metaData = await axios.get(tokenUri)
-          const price = formatPriceToEther(token.price.toString())
-          const formattedToken = {
-            price,
-            tokenId: token.tokenId.toNumber(),
-            seller: token.seller,
-            owner: token.owner,
-            image: metaData.data.image,
-            name: metaData.data.name,
-            description: metaData.data.description,
-          }
-          return formattedToken
-        }),
-      )
-      setNfts(myNFTData)
-      setLoading(false)
+      if (signer && provider) {
+        const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
+        setTokenContract(tokenContract)
+        const marketContract = new ethers.Contract(
+          nftMarketAddress,
+          TKMarket.abi,
+          signer,
+        )
+        const myNFTs = await marketContract.fetchMyNFTs()
+        const myNFTData = await Promise.all(
+          myNFTs.map(async (token: any) => {
+            const tokenUri = await tokenContract.tokenURI(token.tokenId)
+            const metaData = await axios.get(tokenUri)
+            const price = formatPriceToEther(token.price.toString())
+            const formattedToken = {
+              price,
+              tokenId: token.tokenId.toNumber(),
+              seller: token.seller,
+              owner: token.owner,
+              image: metaData.data.image,
+              name: metaData.data.name,
+              description: metaData.data.description,
+            }
+            return formattedToken
+          }),
+        )
+        setNfts(myNFTData)
+        setLoading(false)
+      }
     }
-
     loadMyNFTs()
   }, [signer, provider])
 
