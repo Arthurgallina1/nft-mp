@@ -6,7 +6,7 @@ import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { nftAddress } from '../config'
 import { useWeb3Context } from '../context/web3context'
 import useTokenContract from '../hooks/useTokenContract'
-import { parsePriceToEther } from '../utils/formatters'
+import { getFieldErrors, parsePriceToEther } from '../utils/formatters'
 import useTKMarketContract from '../hooks/useTKMarketContract'
 import { mintTokenFormSchema } from '../utils/validations'
 
@@ -49,10 +49,20 @@ const MintItem: NextPage = () => {
 
   const createMarket = async () => {
     try {
-      const { name, description, price } = formData
-      const isFormValid = await mintTokenFormSchema.isValid(formData)
+      const { name, description } = formData
 
-      if (!isFormValid) return
+      const isFormValid = await mintTokenFormSchema.validate(
+        {
+          ...formData,
+          fileUrl,
+        },
+        { abortEarly: false },
+      )
+
+      if (!isFormValid) {
+        console.log('form not valid', isFormValid)
+        return
+      }
 
       //upload to IPFS
       const data = JSON.stringify({
@@ -67,8 +77,9 @@ const MintItem: NextPage = () => {
       //create sale and passes in the url
       createSale(url)
       setLoading(false)
-    } catch (err) {
-      console.log(`Error uploading file: ${err}`)
+    } catch (err: any) {
+      console.log(`Error creating market: ${err.inner}`)
+      console.debug('errors', getFieldErrors(err.inner))
       setLoading(false)
     }
   }
@@ -105,7 +116,7 @@ const MintItem: NextPage = () => {
         />
         <textarea
           placeholder='Asset Description'
-          className='mt-2 border rounded p-4'
+          className='mt-2 border rounded p-4 resize-none'
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
