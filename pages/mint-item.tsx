@@ -8,6 +8,7 @@ import { useWeb3Context } from '../context/web3context'
 import useTokenContract from '../hooks/useTokenContract'
 import { parsePriceToEther } from '../utils/formatters'
 import useTKMarketContract from '../hooks/useTKMarketContract'
+import { mintTokenFormSchema } from '../utils/validations'
 
 const IPFS_URL = 'https://ipfs.infura.io:5001/api/v0'
 
@@ -16,7 +17,7 @@ const client = ipfsHttpClient({ url: IPFS_URL })
 
 const MintItem: NextPage = () => {
   const router = useRouter()
-  const { signer } = useWeb3Context()
+  const { signer, loggedAddress } = useWeb3Context()
   const { tokenContract } = useTokenContract()
   const { TKMarketContract } = useTKMarketContract()
   const [fileUrl, setFileUrl] = useState('')
@@ -25,9 +26,11 @@ const MintItem: NextPage = () => {
     name: '',
     description: '',
   })
+  const [loading, setLoading] = useState(false)
 
   const onChange = async (e: React.ChangeEvent) => {
     try {
+      setLoading(true)
       const target = e.target as HTMLInputElement
       const file: File = (target.files as FileList)[0]
       const added = await client.add(file, {
@@ -36,17 +39,20 @@ const MintItem: NextPage = () => {
 
       const url = `https://ipfs.infura.io/ipfs/${added.path}`
       setFileUrl(url)
+      console.log('url', url)
     } catch (err) {
       console.log(`Error uploading file: ${err}`)
+    } finally {
+      setLoading(false)
     }
   }
 
   const createMarket = async () => {
     try {
       const { name, description, price } = formData
+      const isFormValid = await mintTokenFormSchema.isValid(formData)
 
-      //to do: add proper validation on form submit
-      if (!name || !description || !price || !fileUrl) return
+      if (!isFormValid) return
 
       //upload to IPFS
       const data = JSON.stringify({
@@ -54,13 +60,16 @@ const MintItem: NextPage = () => {
         description,
         image: fileUrl,
       })
+      setLoading(true)
 
       const added = await client.add(data)
       const url = `https://ipfs.infura.io/ipfs/${added.path}`
       //create sale and passes in the url
       createSale(url)
+      setLoading(false)
     } catch (err) {
       console.log(`Error uploading file: ${err}`)
+      setLoading(false)
     }
   }
 
@@ -113,15 +122,22 @@ const MintItem: NextPage = () => {
           className='mt-2 border rounded p-4'
           onChange={onChange}
         />
+        {/* {TODO: add proper loading} */}
+        {loading ? 'loading' : 'nao load'}
         {fileUrl && (
           <img src={fileUrl} alt='img' className='rounded mt-4' width='350px' />
         )}
-        <button
-          className='font-bold mt-4 rounded bg-blue-900 text-white p-4 shadow-lg'
-          onClick={createMarket}
-        >
-          Mint NFT
-        </button>
+        {loggedAddress ? (
+          <button
+            className='font-bold mt-4 rounded bg-blue-900 text-white p-4 shadow-lg'
+            onClick={createMarket}
+            disabled={loading}
+          >
+            Mint NFT
+          </button>
+        ) : (
+          <div>Please log in to mint tokens</div>
+        )}
       </div>
     </div>
   )
