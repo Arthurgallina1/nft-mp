@@ -9,6 +9,7 @@ import useTokenContract from '../hooks/useTokenContract'
 import { getFieldErrors, parsePriceToEther } from '../utils/formatters'
 import useTKMarketContract from '../hooks/useTKMarketContract'
 import { mintTokenFormSchema } from '../utils/validations'
+import Input from '../components/Input'
 
 const IPFS_URL = 'https://ipfs.infura.io:5001/api/v0'
 
@@ -109,9 +110,10 @@ const MintItem: NextPage = () => {
   return (
     <div className='flex justify-center'>
       <div className='w-1/2 flex flex-col pb-12'>
-        <input
+        <Input
           placeholder='Asset Name'
-          className='mt-8 border rounded p-4'
+          value={formData.name}
+          error={''}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
         />
         <textarea
@@ -121,9 +123,10 @@ const MintItem: NextPage = () => {
             setFormData({ ...formData, description: e.target.value })
           }
         />
-        <input
+        <Input
           placeholder='Asset Price in Eth'
-          className='mt-2 border rounded p-4'
+          value={formData.price}
+          error={''}
           onChange={(e) => setFormData({ ...formData, price: e.target.value })}
         />
         <input
