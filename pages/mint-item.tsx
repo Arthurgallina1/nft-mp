@@ -10,6 +10,7 @@ import { getFieldErrors, parsePriceToEther } from '../utils/formatters'
 import useTKMarketContract from '../hooks/useTKMarketContract'
 import { mintTokenFormSchema } from '../utils/validations'
 import Input from '../components/Input'
+import InputImage from '../components/InputImage'
 
 const IPFS_URL = 'https://ipfs.infura.io:5001/api/v0'
 
@@ -29,7 +30,7 @@ const MintItem: NextPage = () => {
   })
   const [loading, setLoading] = useState(false)
 
-  const onChange = async (e: React.ChangeEvent) => {
+  const onImageUpload = async (e: React.ChangeEvent) => {
     try {
       setLoading(true)
       const target = e.target as HTMLInputElement
@@ -129,15 +130,9 @@ const MintItem: NextPage = () => {
           error={''}
           onChange={(e) => setFormData({ ...formData, price: e.target.value })}
         />
-        <input
-          type='file'
-          name='Asset'
-          placeholder='Asset Price in Eth'
-          className='mt-2 border rounded p-4'
-          onChange={onChange}
-        />
+        <InputImage name='Asset' onChange={onImageUpload} />
         {/* {TODO: add proper loading} */}
-        {loading ? 'loading' : 'nao load'}
+        {loading ? 'loading' : 'not loading'}
         {fileUrl && (
           <img src={fileUrl} alt='img' className='rounded mt-4' width='350px' />
         )}

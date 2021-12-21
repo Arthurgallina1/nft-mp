@@ -14,10 +14,10 @@ export default function Input({
   onChange,
 }: InputType) {
   return (
-    <div className='w-full'>
+    <div className='w-full  mt-8'>
       <input
         placeholder={placeholder}
-        className='w-full mt-8 border rounded p-4'
+        className='w-full border rounded p-4'
         onChange={onChange}
         value={value}
       />
