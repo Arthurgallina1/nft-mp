@@ -26,6 +26,10 @@ const NAV_ITEMS: NavItemType[] = [
     name: 'Dashboard',
     path: '/dashboard',
   },
+  {
+    name: 'Token',
+    path: '/token',
+  },
 ]
 
 const activeClassName =
