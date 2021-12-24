@@ -28,7 +28,7 @@ export default function Input({
       {!!label && <label>{label}</label>}
       <input
         placeholder={placeholder}
-        className={`w-full  border border-solid border-gray-300 rounded ${sizeStyling[size]}`}
+        className={`w-full  border border-solid border-gray-300 mt-2 rounded ${sizeStyling[size]}`}
         onChange={onChange}
         value={value}
       />

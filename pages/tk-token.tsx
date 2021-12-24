@@ -1,6 +1,5 @@
 import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
-import CheckBalance from '../components/CheckBalance'
 import TransferBox from '../components/TransferBox'
 import { useWeb3Context } from '../context/web3context'
 import useTKToken from '../hooks/useTKToken'
@@ -8,20 +7,21 @@ import { formatBignumberToString } from '../utils/formatters'
 
 const Token: NextPage = () => {
   const [userBalance, setUserBalance] = useState('0')
+  const [transactioningAccount, setTransactioningAccount] = useState({
+    address: '',
+    balance: '',
+  })
 
   const { TKTokenContract } = useTKToken()
-  const { loggedAddress, signer } = useWeb3Context()
+  const { loggedAddress } = useWeb3Context()
 
   useEffect(() => {
     const fetchTKTokenData = async () => {
       console.debug('loggedAddress', loggedAddress)
       const balance = await TKTokenContract.balanceOf(loggedAddress)
-      const balanceOfJac = await TKTokenContract.balanceOf(
-        '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc',
-      )
       setUserBalance(formatBignumberToString(balance))
-      console.log(formatBignumberToString(balance))
-      console.log(formatBignumberToString(balanceOfJac))
+      const totalSupply = await TKTokenContract.totalSupply()
+      console.debug('totalSupply', formatBignumberToString(totalSupply))
     }
     if (TKTokenContract) {
       fetchTKTokenData()
@@ -32,20 +32,44 @@ const Token: NextPage = () => {
     try {
       console.debug('transfer to', address, amount)
       const tx = await TKTokenContract.transfer(address, amount)
+      const txEvent = await tx.wait()
       console.debug('tx', tx)
+      // todo: add better event handling hooks
+      const event = txEvent.events[0]
+      const value = event.args[2]
+      console.debug(txEvent, event, value)
     } catch (err) {
       console.log('error getting contract', err)
+    }
+  }
+
+  const onCheckBalanceClick = async (address: string) => {
+    try {
+      console.debug('check addr balance', address)
+      const balance = await TKTokenContract.balanceOf(address)
+      console.debug('balance', formatBignumberToString(balance))
+      setTransactioningAccount({
+        address,
+        balance: formatBignumberToString(balance),
+      })
+    } catch (err) {
+      console.log('err', err)
     }
   }
 
   return (
     <div className='p-8'>
       <h5>Your balance is {userBalance}</h5>
-      <h4>0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc balance is {}</h4>
+      <h5>
+        Transactioning acc: {transactioningAccount.address} |{' '}
+        {transactioningAccount.balance}
+      </h5>
 
       <div className='mx-2'>
-        <TransferBox onTransferClick={onTransferClick} />
-        <CheckBalance />
+        <TransferBox
+          onTransferClick={onTransferClick}
+          onCheckBalanceClick={onCheckBalanceClick}
+        />
       </div>
     </div>
   )
