@@ -8,25 +8,25 @@ export default function useTKToken() {
   const [TKTokenContract, setTKTokenContract] = useState<any>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
-  const { signer, provider } = useWeb3Context()
+  const { signer } = useWeb3Context()
 
   useEffect(() => {
     const loadTKTokenContract = async () => {
-      if (provider) {
+      if (signer) {
         const TKTokenContractInstace = new ethers.Contract(
           tkTokenAddress,
           TKToken.abi,
-          provider,
+          signer,
         )
         setTKTokenContract(TKTokenContractInstace)
         setLoading(false)
-        console.debug(' provider provided')
+        console.debug(' signer provided')
       } else {
-        console.debug('no provider provided')
+        console.debug('no signer provided')
       }
     }
     loadTKTokenContract()
-  }, [provider])
+  }, [signer])
 
   return { TKTokenContract, loading }
 }
