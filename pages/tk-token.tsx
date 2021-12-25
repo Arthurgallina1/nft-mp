@@ -17,11 +17,9 @@ const Token: NextPage = () => {
 
   useEffect(() => {
     const fetchTKTokenData = async () => {
-      console.debug('loggedAddress', loggedAddress)
       const balance = await TKTokenContract.balanceOf(loggedAddress)
       setUserBalance(formatBignumberToString(balance))
-      const totalSupply = await TKTokenContract.totalSupply()
-      console.debug('totalSupply', formatBignumberToString(totalSupply))
+      // const totalSupply = await TKTokenContract.totalSupply()
     }
     if (TKTokenContract) {
       fetchTKTokenData()
@@ -33,7 +31,7 @@ const Token: NextPage = () => {
       console.debug('transfer to', address, amount)
       const tx = await TKTokenContract.transfer(address, amount)
       const txEvent = await tx.wait()
-      console.debug('tx', tx)
+      // console.debug('tx', tx)
       // todo: add better event handling hooks
       const event = txEvent.events[0]
       const value = event.args[2]
@@ -45,9 +43,7 @@ const Token: NextPage = () => {
 
   const onCheckBalanceClick = async (address: string) => {
     try {
-      console.debug('check addr balance', address)
       const balance = await TKTokenContract.balanceOf(address)
-      console.debug('balance', formatBignumberToString(balance))
       setTransactioningAccount({
         address,
         balance: formatBignumberToString(balance),
