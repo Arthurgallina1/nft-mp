@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
 import type { NextPage } from 'next'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
+import Image from 'next/image'
 
 import { useWeb3Context } from '../context/web3context'
 import useTKMarketContract from '../hooks/useTKMarketContract'
 import useTokenContract from '../hooks/useTokenContract'
 import { formatPriceToEther } from '../utils/formatters'
+import { FormattedNFT } from '../data/models/formattedNFT'
 
 const Dashboard: NextPage = () => {
   const [nfts, setNfts] = useState<any>([])
@@ -60,30 +62,17 @@ const Dashboard: NextPage = () => {
           </h1>
         )}
         <div className='flex flex-col justify-center'>
-          <h2>Tokens minted</h2>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4'>
-            {nfts.map((nft: any) => (
-              <div key={nft.tokenId}>
-                <img src={nft.image} />
-                <div className='p-4'>
-                  <p className='text-3x1 font-semibold'>{nft.name}</p>
-                  <p className='text-gray-400'>{nft.description}</p>
-                </div>
-                <div className='p-4 bg-black'>
-                  <p className='text-3x-1 mb-4 font-bold text-white'>
-                    {nft.price} ETH
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className='flex justify-center'>
-            <h2>Sold NFTs</h2>
+          <div>
+            <h2>Tokens minted</h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4'>
-              {soldNFTs.map((nft: any) => (
+              {nfts.map((nft: FormattedNFT) => (
                 <div key={nft.tokenId}>
-                  <img src={nft.image} />
+                  <Image
+                    src={nft.image}
+                    height='300px'
+                    width='300px'
+                    alt={nft.description}
+                  />
                   <div className='p-4'>
                     <p className='text-3x1 font-semibold'>{nft.name}</p>
                     <p className='text-gray-400'>{nft.description}</p>
@@ -95,6 +84,33 @@ const Dashboard: NextPage = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className='flex flex-col justify-center'>
+            <h2>Sold NFTs</h2>
+            <div>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4'>
+                {soldNFTs.map((nft: FormattedNFT) => (
+                  <div key={nft.tokenId}>
+                    <Image
+                      src={nft.image}
+                      height='300px'
+                      width='300px'
+                      alt={nft.description}
+                    />
+                    <div className='p-4'>
+                      <p className='text-3x1 font-semibold'>{nft.name}</p>
+                      <p className='text-gray-400'>{nft.description}</p>
+                    </div>
+                    <div className='p-4 bg-black'>
+                      <p className='text-3x-1 mb-4 font-bold text-white'>
+                        {nft.price} ETH
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
