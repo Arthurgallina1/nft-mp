@@ -22,12 +22,24 @@ const Token: NextPage = () => {
       // const totalSupply = await TKTokenContract.totalSupply()
     }
     if (TKTokenContract) {
+      console.debug('useEffect called')
       fetchTKTokenData()
+      TKTokenContract.on(
+        'Transfer',
+        (from: string, to: string, amount: any, event: Record<string, any>) => {
+          console.debug('events', { from, to, amount, event })
+        },
+      )
+    }
+    return () => {
+      TKTokenContract
     }
   }, [TKTokenContract, loggedAddress])
 
   const onTransferClick = async (address: string, amount: string) => {
     try {
+      const listeners = await TKTokenContract.listeners('Transfer')
+      console.debug('listeners, ', listeners)
       console.debug('transfer to', address, amount)
       const tx = await TKTokenContract.transfer(address, amount)
       const txEvent = await tx.wait()
@@ -35,7 +47,7 @@ const Token: NextPage = () => {
       // todo: add better event handling hooks
       const event = txEvent.events[0]
       const value = event.args[2]
-      console.debug(txEvent, event, value)
+      console.debug('transfer clic', txEvent, event, value)
     } catch (err) {
       console.log('error getting contract', err)
     }
