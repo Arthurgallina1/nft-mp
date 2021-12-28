@@ -1,5 +1,7 @@
 import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+
 import TransferBox from '../components/TransferBox'
 import { useWeb3Context } from '../context/web3context'
 import useTKToken from '../hooks/useTKToken'
@@ -22,17 +24,23 @@ const Token: NextPage = () => {
       // const totalSupply = await TKTokenContract.totalSupply()
     }
     if (TKTokenContract) {
-      console.debug('useEffect called')
+      console.debug('useEffect called', TKTokenContract.listenerCount())
       fetchTKTokenData()
       TKTokenContract.on(
         'Transfer',
         (from: string, to: string, amount: any, event: Record<string, any>) => {
           console.debug('events', { from, to, amount, event })
+          toast.success(`Transfered ${formatBignumberToString(amount)}`)
         },
       )
     }
     return () => {
-      TKTokenContract
+      if (TKTokenContract) {
+        TKTokenContract.removeAllListeners(['Transfer'])
+        TKTokenContract.removeAllListeners([])
+        TKTokenContract.removeAllListeners()
+        console.debug('trasfer listener removed')
+      }
     }
   }, [TKTokenContract, loggedAddress])
 
