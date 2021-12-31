@@ -18,6 +18,7 @@ export default function useTKToken() {
           TKToken.abi,
           signer,
         )
+
         setTKTokenContract(TKTokenContractInstace)
         setLoading(false)
         console.debug(' signer provided')

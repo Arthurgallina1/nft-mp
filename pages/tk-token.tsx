@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import TransferBox from '../components/TransferBox'
 import { useWeb3Context } from '../context/web3context'
 import useTKToken from '../hooks/useTKToken'
+import useTTKCKToken from '../hooks/useTTKCToken'
 import { formatBignumberToString } from '../utils/formatters'
 
 const Token: NextPage = () => {
@@ -15,7 +16,8 @@ const Token: NextPage = () => {
   })
 
   const { TKTokenContract } = useTKToken()
-  const { loggedAddress, signer } = useWeb3Context()
+  const { TTKCTokenContract } = useTTKCKToken()
+  const { loggedAddress } = useWeb3Context()
 
   useEffect(() => {
     const fetchTKTokenData = async () => {
@@ -33,12 +35,13 @@ const Token: NextPage = () => {
         },
       )
     }
+
     return () => {
       if (TKTokenContract) {
         TKTokenContract.removeAllListeners()
       }
     }
-  }, [TKTokenContract, loggedAddress])
+  }, [TKTokenContract, TTKCTokenContract, loggedAddress])
 
   const onTransferClick = async (address: string, amount: string) => {
     try {
@@ -47,11 +50,18 @@ const Token: NextPage = () => {
       console.debug('transfer to', address, amount)
       const tx = await TKTokenContract.transfer(address, amount)
       const txEvent = await tx.wait()
-      // console.debug('tx', tx)
-      // todo: add better event handling hooks
       const event = txEvent.events[0]
       const value = event.args[2]
       console.debug('transfer clic', txEvent, event, value)
+    } catch (err) {
+      console.log('error getting contract', err)
+    }
+  }
+
+  const issueToken = async (address: string, amount: string) => {
+    try {
+      const tx = await TTKCTokenContract.issueToken(address, amount)
+      await tx.wait()
     } catch (err) {
       console.log('error getting contract', err)
     }
@@ -79,7 +89,7 @@ const Token: NextPage = () => {
 
       <div className='mx-2'>
         <TransferBox
-          onTransferClick={onTransferClick}
+          onTransferClick={issueToken}
           onCheckBalanceClick={onCheckBalanceClick}
         />
       </div>
