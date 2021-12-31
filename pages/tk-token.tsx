@@ -1,11 +1,8 @@
-import { ethers } from 'ethers'
 import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
-import TKToken from '../artifacts/contracts/TKToken.sol/TKToken.json'
 import TransferBox from '../components/TransferBox'
-import { tkTokenAddress } from '../config'
 import { useWeb3Context } from '../context/web3context'
 import useTKToken from '../hooks/useTKToken'
 import { formatBignumberToString } from '../utils/formatters'
@@ -35,43 +32,13 @@ const Token: NextPage = () => {
           toast.success(`Transfered ${formatBignumberToString(amount)}`)
         },
       )
-      console.debug('useEffect called', TKTokenContract.listenerCount())
     }
     return () => {
       if (TKTokenContract) {
         TKTokenContract.removeAllListeners()
-        console.debug('trasfer listener removed')
       }
     }
   }, [TKTokenContract, loggedAddress])
-
-  // useEffect(() => {
-  //   const fetchTKTokenData = async (TKTokenContractInstace: any) => {
-  //     const balance = await TKTokenContractInstace.balanceOf(loggedAddress)
-  //     setUserBalance(formatBignumberToString(balance))
-  //   }
-
-  //   if (signer && loggedAddress) {
-  //     const TKTokenContractInstace = new ethers.Contract(
-  //       tkTokenAddress,
-  //       TKToken.abi,
-  //       signer,
-  //     )
-
-  //     fetchTKTokenData(TKTokenContractInstace)
-  //     TKTokenContractInstace.on(
-  //       'Transfer',
-  //       (from: string, to: string, amount: any, event: Record<string, any>) => {
-  //         console.debug('events', { from, to, amount, event })
-  //         toast.success(`Transfered ${formatBignumberToString(amount)}`)
-  //       },
-  //     )
-  //     return () => {
-  //       TKTokenContractInstace.removeAllListeners()
-  //       console.debug('trasfer listener removed')
-  //     }
-  //   }
-  // }, [loggedAddress, signer])
 
   const onTransferClick = async (address: string, amount: string) => {
     try {
