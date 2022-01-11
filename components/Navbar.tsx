@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useWeb3Context } from '../context/web3context'
+import Button from './Button'
+import Modal from './Modal'
 
 type NavItemType = {
   name: string
@@ -39,7 +41,9 @@ const inactiveClassName =
 
 export default function Navbar() {
   const { pathname } = useRouter()
-  const { loggedAddress } = useWeb3Context()
+  const { connectWallet, loggedAddress } = useWeb3Context()
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <>
@@ -82,10 +86,21 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
-            {loggedAddress && (
+            {loggedAddress ? (
               <div className='hidden sm:block'>
                 <span className='text-white'>{loggedAddress}</span>
               </div>
+            ) : (
+              <>
+                <Button onClick={() => setIsModalOpen(!isModalOpen)}>
+                  Connect
+                </Button>
+                <Modal
+                  open={isModalOpen}
+                  onCancel={() => setIsModalOpen(false)}
+                  onAction={connectWallet}
+                />
+              </>
             )}
           </div>
         </div>

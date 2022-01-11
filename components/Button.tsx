@@ -13,7 +13,7 @@ export default function Button({
 }: ButtonType) {
   return (
     <button
-      className='font-bold mt-4 rounded bg-blue-900 text-white px-4 py-2 shadow-lg disabled:bg-gray-300'
+      className='font-bold rounded bg-blue-900 text-white px-4 py-2 shadow-lg disabled:bg-gray-300'
       onClick={onClick}
       disabled={disabled}
     >

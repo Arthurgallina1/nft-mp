@@ -11,14 +11,18 @@ import TKMarket from '../artifacts/contracts/TKMarket.sol/TKMarket.json'
 import { formatPriceToEther, parsePriceToEther } from '../utils/formatters'
 import Button from '../components/Button'
 import { FormattedNFT } from '../data/models/formattedNFT'
+import { useWeb3Context } from '../context/web3context'
 
 const Home: NextPage = () => {
   const [nfts, setNfts] = useState<FormattedNFT[]>([])
   const [loading, setLoading] = useState<boolean>(true)
+  const { loggedAddress } = useWeb3Context()
 
   useEffect(() => {
-    loadNFTs()
-  }, [])
+    if (loggedAddress) {
+      loadNFTs()
+    }
+  }, [loggedAddress])
 
   const loadNFTs = async () => {
     const provider = new ethers.providers.JsonRpcProvider()
@@ -75,6 +79,11 @@ const Home: NextPage = () => {
   return (
     <div>
       <main>
+        {!loggedAddress && (
+          <h1 className='px-20 py-7 text-4x1'>
+            Please login to check our marketplace
+          </h1>
+        )}
         {!loading && !nfts.length && (
           <h1 className='px-20 py-7 text-4x1'>No NFTs in market</h1>
         )}

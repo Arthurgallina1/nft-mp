@@ -11,12 +11,14 @@ type Web3ContextType = {
   signer: any
   provider: any
   loggedAddress: string
+  connectWallet: () => void
 }
 
 const Web3Context = createContext<Web3ContextType>({
   signer: null,
   provider: null,
   loggedAddress: '',
+  connectWallet: () => ({}),
 })
 
 export const useWeb3Context = () => useContext(Web3Context)
@@ -29,8 +31,20 @@ export default function Web3ContextProvider({
   const [loggedAddress, setLoggedAddress] = useState('')
 
   useEffect(() => {
-    loadWeb3()
+    // loadWeb3()
   }, [])
+
+  const connectWallet = async () => {
+    const web3Modal = new Web3Modal()
+    const connection = await web3Modal.connect()
+    const provider = new ethers.providers.Web3Provider(connection)
+    const signer = provider.getSigner()
+    const signerAddress = await signer.getAddress()
+    // const signerBall = await signer.getBalance()
+    setProvider(provider)
+    setSigner(signer)
+    setLoggedAddress(signerAddress)
+  }
 
   const loadWeb3 = async () => {
     const web3Modal = new Web3Modal()
@@ -45,7 +59,9 @@ export default function Web3ContextProvider({
   }
 
   return (
-    <Web3Context.Provider value={{ signer, provider, loggedAddress }}>
+    <Web3Context.Provider
+      value={{ signer, provider, loggedAddress, connectWallet }}
+    >
       {children}
     </Web3Context.Provider>
   )
