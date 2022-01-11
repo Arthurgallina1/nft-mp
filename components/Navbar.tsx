@@ -92,14 +92,12 @@ export default function Navbar() {
               </div>
             ) : (
               <>
-                <Button onClick={() => setIsModalOpen(!isModalOpen)}>
-                  Connect
-                </Button>
-                <Modal
+                <Button onClick={connectWallet}>Connect</Button>
+                {/* <Modal
                   open={isModalOpen}
                   onCancel={() => setIsModalOpen(false)}
                   onAction={connectWallet}
-                />
+                /> */}
               </>
             )}
           </div>

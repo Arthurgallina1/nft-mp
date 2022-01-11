@@ -1,7 +1,7 @@
 import React, { useContext, createContext, useEffect, useState } from 'react'
 import Web3Modal from 'web3modal'
 import { ethers } from 'ethers'
-import { formatBignumberToString } from '../utils/formatters'
+import WalletConnect from '@walletconnect/web3-provider'
 
 type Web3ContextProviderType = {
   children: JSX.Element | JSX.Element[]
@@ -23,6 +23,25 @@ const Web3Context = createContext<Web3ContextType>({
 
 export const useWeb3Context = () => useContext(Web3Context)
 
+const providerOptions = {
+  walletconnect: {
+    package: WalletConnect,
+    options: {
+      infuraId: '123',
+    },
+  },
+  // torus: {
+  //   package: Torus
+  // },
+  // walletlink: {
+  //   package: WalletLink,
+  //   options: {
+  //     appName: "Web3Modal Example App",
+  //     infuraId
+  //   }
+  // }
+}
+
 export default function Web3ContextProvider({
   children,
 }: Web3ContextProviderType) {
@@ -35,7 +54,8 @@ export default function Web3ContextProvider({
   }, [])
 
   const connectWallet = async () => {
-    const web3Modal = new Web3Modal()
+    console.debug('calling it')
+    const web3Modal = new Web3Modal({ cacheProvider: true, providerOptions })
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()
