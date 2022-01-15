@@ -7,7 +7,7 @@ const supportedChains: IChainData[] = [
     chain: 'Local',
     network: 'localhost',
     chain_id: 1337,
-    network_id: 1,
+    network_id: 1337,
     rpc_url: 'https://mainnet.infura.io/v3/%API_KEY%',
     native_currency: {
       symbol: 'ETH',

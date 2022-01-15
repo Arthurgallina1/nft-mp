@@ -49,6 +49,7 @@ export default function Web3ContextProvider({
   const [provider, setProvider] = useState<any>(null)
   const [signer, setSigner] = useState<any>(null)
   const [loggedAddress, setLoggedAddress] = useState('')
+  const [network, setNetwork] = useState<string>('')
 
   useEffect(() => {
     // loadWeb3()
@@ -60,10 +61,6 @@ export default function Web3ContextProvider({
     const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()
     const signerAddress = await signer.getAddress()
-
-    provider.on('accountsChanged', async (accounts: string[]) => {
-      console.debug('accounts changeds', accounts)
-    })
 
     /* */
     const { chainId } = await provider.getNetwork()
@@ -80,31 +77,36 @@ export default function Web3ContextProvider({
     setProvider(provider)
     setSigner(signer)
     setLoggedAddress(signerAddress)
-    subscribeProvider(provider)
+    subscribeProvider(connection)
   }
 
-  const subscribeProvider = async (provider: any) => {
-    console.debug('subscring provider')
+  const subscribeProvider = async (connection: any) => {
+    console.debug('subscring connection')
 
-    if (!provider.on) {
-      console.debug('invalid provider')
+    if (!connection.on) {
+      console.debug('invalid connection')
       return
     }
 
-    provider.on('close', () => {
-      console.debug('provider closed')
+    connection.on('close', () => {
+      console.debug('connection closed')
     })
 
-    provider.on('accountsChanged', async (accounts: string[]) => {
+    connection.on('accountsChanged', async (accounts: string[]) => {
       console.debug('accounts changeds', accounts)
+      setLoggedAddress(accounts[0])
     })
 
-    provider.on('chainChanged', async (chainId: number) => {
+    connection.on('chainChanged', async (chainId: number) => {
       console.debug('chain changed', chainId)
     })
 
-    provider.on('networkChanged', async (networkId: number) => {
+    connection.on('networkChanged', async (networkId: number) => {
       console.debug('network changed', networkId)
+      const network = supportedChains.filter(
+        (chain) => chain.network_id == networkId,
+      )[0]
+      console.debug('network', network)
     })
   }
 
