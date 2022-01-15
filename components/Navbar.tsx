@@ -43,8 +43,6 @@ export default function Navbar() {
   const { pathname } = useRouter()
   const { connectWallet, loggedAddress } = useWeb3Context()
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
   return (
     <>
       <Head>
@@ -93,11 +91,6 @@ export default function Navbar() {
             ) : (
               <>
                 <Button onClick={connectWallet}>Connect</Button>
-                {/* <Modal
-                  open={isModalOpen}
-                  onCancel={() => setIsModalOpen(false)}
-                  onAction={connectWallet}
-                /> */}
               </>
             )}
           </div>

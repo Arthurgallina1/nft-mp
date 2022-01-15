@@ -2,6 +2,7 @@ import React, { useContext, createContext, useEffect, useState } from 'react'
 import Web3Modal from 'web3modal'
 import { ethers } from 'ethers'
 import WalletConnect from '@walletconnect/web3-provider'
+import supportedChains from '../helpers/chain'
 
 type Web3ContextProviderType = {
   children: JSX.Element | JSX.Element[]
@@ -54,16 +55,57 @@ export default function Web3ContextProvider({
   }, [])
 
   const connectWallet = async () => {
-    console.debug('calling it')
-    const web3Modal = new Web3Modal({ cacheProvider: true, providerOptions })
+    const web3Modal = new Web3Modal({ cacheProvider: false, providerOptions })
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()
     const signerAddress = await signer.getAddress()
-    // const signerBall = await signer.getBalance()
+
+    provider.on('accountsChanged', async (accounts: string[]) => {
+      console.debug('accounts changeds', accounts)
+    })
+
+    /* */
+    const { chainId } = await provider.getNetwork()
+
+    const chain = supportedChains.filter(
+      (chain) => chain.chain_id === chainId,
+    )[0]
+
+    if (!chain) {
+      throw new Error('Chain not supported')
+    }
+    /* */
+
     setProvider(provider)
     setSigner(signer)
     setLoggedAddress(signerAddress)
+    subscribeProvider(provider)
+  }
+
+  const subscribeProvider = async (provider: any) => {
+    console.debug('subscring provider')
+
+    if (!provider.on) {
+      console.debug('invalid provider')
+      return
+    }
+
+    provider.on('close', () => {
+      console.debug('provider closed')
+    })
+
+    provider.on('accountsChanged', async (accounts: string[]) => {
+      console.debug('accounts changeds', accounts)
+    })
+
+    provider.on('chainChanged', async (chainId: number) => {
+      console.debug('chain changed', chainId)
+    })
+
+    provider.on('networkChanged', async (networkId: number) => {
+      console.debug('network changed', networkId)
+    })
   }
 
   const loadWeb3 = async () => {
@@ -72,7 +114,6 @@ export default function Web3ContextProvider({
     const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()
     const signerAddress = await signer.getAddress()
-    // const signerBall = await signer.getBalance()
     setProvider(provider)
     setSigner(signer)
     setLoggedAddress(signerAddress)
