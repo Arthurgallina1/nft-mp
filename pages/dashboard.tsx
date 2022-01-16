@@ -16,10 +16,10 @@ const Dashboard: NextPage = () => {
 
   const { TKMarketContract } = useTKMarketContract()
   const { tokenContract } = useTokenContract()
-  const { provider } = useWeb3Context()
+  const { provider, loggedAddress } = useWeb3Context()
 
   useEffect(() => {
-    if (TKMarketContract && tokenContract && provider) {
+    if (TKMarketContract && tokenContract && provider && loggedAddress) {
       const loadMyNFTs = async () => {
         // get msg.sender to the signer to display owner nfts
         const createdNFTs = await TKMarketContract.fetchItemsCreated()
@@ -51,7 +51,7 @@ const Dashboard: NextPage = () => {
 
       loadMyNFTs()
     }
-  }, [TKMarketContract, provider, tokenContract])
+  }, [TKMarketContract, provider, tokenContract, loggedAddress])
 
   return (
     <div>

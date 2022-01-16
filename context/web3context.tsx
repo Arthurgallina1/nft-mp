@@ -111,6 +111,7 @@ export default function Web3ContextProvider({
         (chain) => chain.network_id == networkId,
       )[0]
       console.debug('network', network)
+      window.location.reload()
     })
   }
 

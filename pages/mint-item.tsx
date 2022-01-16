@@ -6,11 +6,16 @@ import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { nftAddress } from '../config'
 import { useWeb3Context } from '../context/web3context'
 import useTokenContract from '../hooks/useTokenContract'
-import { getFieldErrors, parsePriceToEther } from '../utils/formatters'
+import {
+  formatPriceToEther,
+  getFieldErrors,
+  parsePriceToEther,
+} from '../utils/formatters'
 import useTKMarketContract from '../hooks/useTKMarketContract'
 import { mintTokenFormSchema } from '../utils/validations'
 import Input from '../components/Input'
 import InputImage from '../components/InputImage'
+import toast from '../components/Toast'
 
 const IPFS_URL = 'https://ipfs.infura.io:5001/api/v0'
 
@@ -122,7 +127,22 @@ const MintItem: NextPage = () => {
         sold: boolean,
         event: Record<string, any>,
       ) => {
-        console.debug('event!!', event, itemId.toNumber(), price, sold)
+        console.debug(
+          'event!!',
+          event,
+          itemId.toNumber(),
+          formatPriceToEther(price.toString()),
+          sold,
+        )
+        toast.success(
+          `A new minted item ${itemId.toNumber()} for ${formatPriceToEther(
+            price.toString(),
+          )}`,
+        )
+
+        setTimeout(() => {
+          router.push('/')
+        }, 2000)
       },
     )
   }
