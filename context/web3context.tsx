@@ -56,7 +56,11 @@ export default function Web3ContextProvider({
   }, [])
 
   const connectWallet = async () => {
-    const web3Modal = new Web3Modal({ cacheProvider: false, providerOptions })
+    const web3Modal = new Web3Modal({ cacheProvider: true, providerOptions })
+    if (web3Modal.cachedProvider) {
+      console.debug('cached provider on')
+    }
+
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()

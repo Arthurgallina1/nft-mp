@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { NextPage } from 'next'
 import Image from 'next/image'
 import axios from 'axios'
@@ -12,27 +12,25 @@ import { formatPriceToEther, parsePriceToEther } from '../utils/formatters'
 import Button from '../components/Button'
 import { FormattedNFT } from '../data/models/formattedNFT'
 import { useWeb3Context } from '../context/web3context'
+import useTokenContract from '../hooks/useTokenContract'
+import useTKMarketContract from '../hooks/useTKMarketContract'
 
 const Home: NextPage = () => {
   const [nfts, setNfts] = useState<FormattedNFT[]>([])
   const [loading, setLoading] = useState<boolean>(true)
-  const { loggedAddress } = useWeb3Context()
+  const { loggedAddress, provider } = useWeb3Context()
+  const { tokenContract } = useTokenContract()
+  const { TKMarketContract } = useTKMarketContract()
 
-  useEffect(() => {
-    if (loggedAddress) {
-      loadNFTs()
-    }
-  }, [loggedAddress])
-
-  const loadNFTs = async () => {
-    const provider = new ethers.providers.JsonRpcProvider()
-    const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
-    const marketContract = new ethers.Contract(
-      nftMarketAddress,
-      TKMarket.abi,
-      provider,
-    )
-    const tokens = await marketContract.fetchMarketTokens()
+  const loadNFTs = useCallback(async () => {
+    // const provider = new ethers.providers.JsonRpcProvider()
+    // const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
+    // const marketContract = new ethers.Contract(
+    //   nftMarketAddress,
+    //   TKMarket.abi,
+    //   provider,
+    // )
+    const tokens = await TKMarketContract.fetchMarketTokens()
 
     const nftData = await Promise.all(
       tokens.map(async (token: any) => {
@@ -55,7 +53,13 @@ const Home: NextPage = () => {
 
     setLoading(false)
     setNfts(nftData)
-  }
+  }, [tokenContract, TKMarketContract])
+
+  useEffect(() => {
+    if (loggedAddress && tokenContract && TKMarketContract) {
+      loadNFTs()
+    }
+  }, [loggedAddress, tokenContract, TKMarketContract, loadNFTs])
 
   //buy nfts function
   const buyNFT = async (nft: FormattedNFT) => {
