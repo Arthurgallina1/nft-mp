@@ -14,6 +14,7 @@ import { FormattedNFT } from '../data/models/formattedNFT'
 import { useWeb3Context } from '../context/web3context'
 import useTokenContract from '../hooks/useTokenContract'
 import useTKMarketContract from '../hooks/useTKMarketContract'
+import { Log, Filter } from '@ethersproject/abstract-provider'
 
 const Home: NextPage = () => {
   const [nfts, setNfts] = useState<FormattedNFT[]>([])
@@ -22,7 +23,20 @@ const Home: NextPage = () => {
   const { tokenContract } = useTokenContract()
   const { TKMarketContract } = useTKMarketContract()
 
+  const logs = async (): Promise<Log[]> => {
+    const filter: Filter = {
+      // address: loggedAddress,
+    }
+    return await provider.getLogs(filter)
+  }
+
   const loadNFTs = useCallback(async () => {
+    if (provider) {
+      console.debug('hi', await logs())
+      const log = await logs()
+      const firstLog = log[0] || {}
+      console.debug('firstLog.logIndex', firstLog.logIndex)
+    }
     // const provider = new ethers.providers.JsonRpcProvider()
     // const tokenContract = new ethers.Contract(nftAddress, NFT.abi, provider)
     // const marketContract = new ethers.Contract(
