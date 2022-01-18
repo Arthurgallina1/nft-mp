@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export const storeSlice = createSlice({
   name: 'rootSlice',
@@ -13,8 +13,17 @@ export const storeSlice = createSlice({
     decrement(state) {
       state.counter -= 1
     },
+    incrementByAmount: (state, action: PayloadAction<number>) => {
+      state.counter += action.payload
+    },
   },
 })
 
-export const { increment, decrement } = storeSlice.actions
+export const { increment, decrement, incrementByAmount } = storeSlice.actions
 export default storeSlice.reducer
+
+export const incrementAsync = (amount: number) => (dispatch: any) => {
+  setTimeout(() => {
+    dispatch(incrementByAmount(amount))
+  }, 1000)
+}
