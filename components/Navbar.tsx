@@ -32,6 +32,10 @@ const NAV_ITEMS: NavItemType[] = [
     name: 'Tokens',
     path: '/tk-token',
   },
+  {
+    name: 'Toolkit',
+    path: '/toolkit',
+  },
 ]
 
 const activeClassName =
