@@ -16,11 +16,14 @@ const Token: NextPage = () => {
   })
 
   const { TKTokenContract } = useTKToken()
+
   const { TTKCTokenContract } = useTTKCKToken()
   const { loggedAddress } = useWeb3Context()
 
   useEffect(() => {
     const fetchTKTokenData = async () => {
+      console.debug('TKTokenContract', TKTokenContract)
+
       const balance = await TKTokenContract.balanceOf(loggedAddress)
       setUserBalance(formatBignumberToString(balance))
       // const totalSupply = await TKTokenContract.totalSupply()

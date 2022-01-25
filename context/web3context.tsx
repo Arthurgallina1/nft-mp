@@ -55,14 +55,23 @@ export default function Web3ContextProvider({
     // loadWeb3()
   }, [])
 
-  const connectWallet = async () => {
+  useEffect(() => {
     const web3Modal = new Web3Modal({ cacheProvider: true, providerOptions })
     if (web3Modal.cachedProvider) {
-      console.debug('cached provider on')
+      connectWallet()
+      console.debug('cached so vai')
     }
+  }, [])
+
+  const connectWallet = async () => {
+    const web3Modal = new Web3Modal({ cacheProvider: true, providerOptions })
+    // if (web3Modal.cachedProvider) {
+    //   console.debug('cached provider on')
+    // }
 
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection)
+    console.log('provider', provider)
     const signer = provider.getSigner()
     const signerAddress = await signer.getAddress()
 
@@ -107,11 +116,12 @@ export default function Web3ContextProvider({
 
     connection.on('networkChanged', async (networkId: number) => {
       console.debug('network changed', networkId)
+
       const network = supportedChains.filter(
         (chain) => chain.network_id == networkId,
       )[0]
       console.debug('network', network)
-      window.location.reload()
+      // window.location.reload()
     })
   }
 
