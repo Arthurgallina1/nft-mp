@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react'
 import { ethers } from 'ethers'
-import axios from 'axios'
 
-import { nftAddress, nftMarketAddress } from '../config'
-import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
+import { nftMarketAddress } from '../config'
 import TKMarket from '../artifacts/contracts/TKMarket.sol/TKMarket.json'
 import { useWeb3Context } from '../context/web3context'
-import { FormattedNFT } from '../data/models/formattedNFT'
 
 export default function useTKMarketContract() {
   const [TKMarketContract, setTKMarketContract] = useState<any>(null)

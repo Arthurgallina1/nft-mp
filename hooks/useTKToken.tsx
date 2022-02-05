@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react'
 import { ethers } from 'ethers'
-
+import { useEffect, useState } from 'react'
 import { tkTokenAddress } from '../config'
-import TKToken from '../artifacts/contracts/TKToken.sol/TKToken.json'
 import { useWeb3Context } from '../context/web3context'
-import { FormattedNFT } from '../data/models/formattedNFT'
+import TKToken from '../artifacts/contracts/TKToken.sol/TKToken.json'
 
-export default function useTKTokenContract() {
+export default function useTKToken() {
   const [TKTokenContract, setTKTokenContract] = useState<any>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
@@ -14,10 +12,19 @@ export default function useTKTokenContract() {
 
   useEffect(() => {
     const loadTKTokenContract = async () => {
-      const tkToken = new ethers.Contract(tkTokenAddress, TKToken.abi, signer)
-      console.debug(tkToken, 'tkToken')
-      setTKTokenContract(tkToken)
-      setLoading(false)
+      if (signer) {
+        const TKTokenContractInstace = new ethers.Contract(
+          tkTokenAddress,
+          TKToken.abi,
+          signer,
+        )
+
+        setTKTokenContract(TKTokenContractInstace)
+        setLoading(false)
+        console.debug(' signer provided')
+      } else {
+        console.debug('no signer provided')
+      }
     }
     loadTKTokenContract()
   }, [signer])

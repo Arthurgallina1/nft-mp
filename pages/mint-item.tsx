@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import type { NextPage } from 'next'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
@@ -6,11 +6,16 @@ import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { nftAddress } from '../config'
 import { useWeb3Context } from '../context/web3context'
 import useTokenContract from '../hooks/useTokenContract'
-import { getFieldErrors, parsePriceToEther } from '../utils/formatters'
+import {
+  formatPriceToEther,
+  getFieldErrors,
+  parsePriceToEther,
+} from '../utils/formatters'
 import useTKMarketContract from '../hooks/useTKMarketContract'
 import { mintTokenFormSchema } from '../utils/validations'
 import Input from '../components/Input'
 import InputImage from '../components/InputImage'
+import toast from '../components/Toast'
 
 const IPFS_URL = 'https://ipfs.infura.io:5001/api/v0'
 
@@ -105,8 +110,55 @@ const MintItem: NextPage = () => {
       { value: listingPrice },
     )
     await transaction.wait()
-    router.push('/')
+    // router.push('/')
   }
+
+  const subscribeToMarketEvents = (TKMarketContract: any) => {
+    console.debug('subscribing to contract events')
+    TKMarketContract.on(
+      'MarketTokenMinted',
+      (
+        itemId: any,
+        address: string,
+        tokenId: any,
+        seller: string,
+        owner: string,
+        price: any,
+        sold: boolean,
+        event: Record<string, any>,
+      ) => {
+        console.debug(
+          'event!!',
+          event,
+          itemId.toNumber(),
+          formatPriceToEther(price.toString()),
+          sold,
+        )
+        toast.success(
+          `A new minted item ${itemId.toNumber()} for ${formatPriceToEther(
+            price.toString(),
+          )}`,
+        )
+
+        setTimeout(() => {
+          router.push('/')
+        }, 2000)
+      },
+    )
+  }
+
+  useEffect(() => {
+    if (TKMarketContract && loggedAddress) {
+      // const TKMarketWithSinger = TKMarketContract.connect(signer)
+      subscribeToMarketEvents(TKMarketContract)
+    }
+    return () => {
+      if (TKMarketContract) {
+        console.debug('cleaning listeners')
+        TKMarketContract.removeAllListeners()
+      }
+    }
+  }, [TKMarketContract, signer, loggedAddress])
 
   return (
     <div className='flex justify-center'>

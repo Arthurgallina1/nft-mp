@@ -9,9 +9,12 @@
     "test": "jest --watchAll"
   },
   "dependencies": {
+    "@ethersproject/abstract-provider": "^5.5.1",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "^4.4.0",
+    "@reduxjs/toolkit": "^1.7.1",
+    "@walletconnect/web3-provider": "^1.7.1",
     "autoprefixer": "^10.4.0",
     "axios": "^0.24.0",
     "chai": "^4.3.4",
@@ -23,6 +26,8 @@
     "postcss": "^8.4.4",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-redux": "^7.2.6",
+    "react-toastify": "^8.1.0",
     "tailwindcss": "^2.2.19",
     "web3modal": "^1.9.4",
     "yup": "^0.32.11"
